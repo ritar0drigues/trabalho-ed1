@@ -1,56 +1,34 @@
-# 📋 Sistema de Gerenciamento de Tarefas
+Implementar um sistema de organização de eventos acadêmicos, utilizando
+diferentes estruturas de dados dinâmicas:
+● Lista Encadeada Circular
+● Lista Encadeada Simples
+● Lista Duplamente Encadeada
+● Fila
+● Pilha
+● Algoritmos de Ordenação (um deve ser recursivo e outro iterativo)
 
-## 📚 Requisitos do Projeto
+Funcionalidades: 
+1. Lista Encadeada Circular de Eventos:
+Cada nó representa um evento (nome, data, ponteiro para lista de atividades)
+Necessário Cadastrar, listar e remover eventos.
 
-### Estruturas de Dados Fundamentais
+2. Lista Encadeada Simples de Atividades:
+Cada nó representa uma atividade (título, horário, ponteiro para participantes)
+Necessário Cadastrar, listar e remover atividades por evento
 
-#### 1. 📝 Lista Encadeada
-- Armazenamento principal de tarefas
-- Cada nó contém:
-  - Nome da tarefa
-  - Prioridade
-  - Deadline
+3. Lista Duplamente Encadeada de Participantes:
+Cada nó representa um participante (nome, matrícula, e-mail)
+Necessário Cadastrar, listar, remover participantes por atividade.
 
-#### 2. 🔄 Lista Encadeada Circular
-- Histórico de tarefas concluídas
-- Capacidade limitada (últimas 10 tarefas)
-- Mantém registro circular das conclusões
+4. Fila de Check-in por Evento(Ponteiro):
+Gerencia a ordem de chegada dos participantes no dia do evento
+FIFO
 
-#### 3. ⚖️ Lista Duplamente Encadeada
-- Organização por prioridade
-- Reordenação dinâmica de tarefas
-- Critérios flexíveis de ordenação
+5. Pilha de Desfazer (Ponteiro):
+Armazena operações de remoção (atividade ou participante) e permite restaurar a última
 
-### Estruturas Auxiliares
+6. Algoritmos de Ordenação (um deve ser recursivo e outro iterativo) aplicados
+em:
+Atividades por horário, Merge Sort - Recursivo
+Participantes por nome (ordem alfabética), Insertion Sort - Iterativo
 
-#### 4. ↩️ Pilha
-- Sistema de desfazer ações
-- Funcionalidades:
-  - Reverter remoção de tarefas
-  - Desfazer alterações de prioridade
-
-#### 5. 📊 Fila
-- Gerenciamento de tarefas pendentes
-- Ordenação por:
-  - Ordem de chegada
-  - Critérios personalizados
-
-### Algoritmos
-
-#### 6. 🔍 Recursividade
-- Busca recursiva de tarefas
-- Localização por:
-  - Palavras-chave
-  - Nome da tarefa
-  - Descrição
-
-#### 7. 📈 Algoritmos de Ordenação
-- Múltiplos critérios de ordenação:
-  - Data de criação
-  - Prioridade
-- Implementação de diversos métodos de ordenação
-
-#### 8. 🔎 Algoritmos de Busca
-- Busca binária
-- Localização rápida após ordenação
-- Otimização de busca
