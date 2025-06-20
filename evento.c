@@ -43,3 +43,44 @@ void listarEventos(Evento *lista){
         } while(atual != lista);
     }
 }
+
+void removerEvento(Evento **lista, char nome[]){
+    if (*lista == NULL) {
+        printf("Nenhum evento para remover.\n");
+        return;
+    }
+
+    Evento *atual = *lista;
+    Evento *anterior = NULL;
+
+    do {
+        if (strcmp(atual->nome, nome) == 0) {
+            if (atual == atual->prox) {
+                // Único elemento
+                free(atual);
+                *lista = NULL;
+            } else {
+                if (atual == *lista) {
+                    // Removendo o primeiro
+                    Evento *ultimo = *lista;
+                    while (ultimo->prox != *lista) {
+                        ultimo = ultimo->prox;
+                    }
+                    *lista = atual->prox;
+                    ultimo->prox = *lista;
+                } else {
+                    // Removendo do meio/fim
+                    anterior->prox = atual->prox;
+                }
+                free(atual);
+            }
+            printf("Evento removido com sucesso.\n");
+            return;
+        }
+        anterior = atual;
+        atual = atual->prox;
+    } while (atual != *lista);
+
+    printf("Evento não encontrado.\n");
+
+}
