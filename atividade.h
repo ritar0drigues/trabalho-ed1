@@ -3,11 +3,11 @@
 
 #include "participante.h"
 
-typedef struct Atividade{
+typedef struct Atividade {
     char titulo[100];
     char horario[6];
-    Participante *participantes;
-    Atividade *prox;
+    struct Participante *participantes;
+    struct Atividade *prox;
 } Atividade;
 
 Atividade* criarAtividade(char titulo[], char horario[]);

@@ -1,6 +1,5 @@
 #ifndef EVENTO_H
 #define EVENTO_H
-
 #include "atividade.h"
 
 typedef struct Evento {

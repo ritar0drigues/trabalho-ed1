@@ -14,7 +14,7 @@ Evento* criarEvento(char nome[], char data[]){
 }
 
 void inserirEvento(Evento **lista, Evento *novo){
-    Evento *aux = *lista, *ant = NULL;
+    Evento *aux = *lista;
 
     if (*lista == NULL){
         *lista = novo;
@@ -31,9 +31,10 @@ void inserirEvento(Evento **lista, Evento *novo){
 
 void listarEventos(Evento *lista){
     Evento *atual = lista;
-    if (lista = NULL){
-    printf("NÃO EXISTEM EVENTOS A SEREM LISTADOS");
-    return;
+    
+    if(lista == NULL){
+        printf("NÃO EXISTEM EVENTOS A SEREM LISTADOS");
+        return;
     }
     else{
         do{ 
