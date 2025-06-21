@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "evento.h"
-#include "evento.c"
 #include "atividade.h"
 #include "participante.h"
 

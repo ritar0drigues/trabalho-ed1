@@ -17,7 +17,9 @@ void inserirEvento(Evento **lista, Evento *novo){
     Evento *aux = *lista;
 
     if (*lista == NULL){
+         novo->prox = novo;
         *lista = novo;
+         return;
     }
 
     while (aux->prox != *lista){
