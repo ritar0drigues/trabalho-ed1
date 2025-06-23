@@ -3,51 +3,52 @@
 #include <string.h>
 #include "evento.h"
 
-
-Evento* criarEvento(char nome[], char data[]){
-    Evento *novo = (Evento*)malloc(sizeof(Evento));
+// Cria um evento com nome e data
+Evento* criarEvento(char nome[], char data[]) {
+    Evento *novo = malloc(sizeof(Evento));
+    if (!novo) {
+        printf("Erro ao alocar memória para evento.\n");
+        exit(1);
+    }
     strcpy(novo->nome, nome);
     strcpy(novo->data, data);
-    novo->atividades = NULL; 
-    novo->prox = novo;
+    novo->atividades = NULL;
+    novo->prox = novo; // lista circular
     return novo;
 }
 
-void inserirEvento(Evento **lista, Evento *novo){
-    Evento *aux = *lista;
-
-    if (*lista == NULL){
-         novo->prox = novo;
+// Insere um evento na lista circular
+void inserirEvento(Evento **lista, Evento *novo) {
+    if (*lista == NULL) {
         *lista = novo;
-         return;
+    } else {
+        Evento *atual = *lista;
+        while (atual->prox != *lista) {
+            atual = atual->prox;
+        }
+        atual->prox = novo;
+        novo->prox = *lista;
     }
-
-    while (aux->prox != *lista){
-        aux = aux->prox;
-    }
-
-    novo->prox = *lista;
-    aux->prox = novo;
-    *lista = novo;
 }
 
-void listarEventos(Evento *lista){
-    Evento *atual = lista;
-    
-    if(lista == NULL){
-        printf("NÃO EXISTEM EVENTOS A SEREM LISTADOS");
+// Lista todos os eventos
+void listarEventos(Evento *lista) {
+    if (lista == NULL) {
+        printf("Nenhum evento cadastrado.\n");
         return;
     }
-    else{
-        do{ 
+
+    Evento *atual = lista;
+    do {
         printf("\nEvento: %s\n", atual->nome);
         printf("Data: %s\n", atual->data);
+        listarAtividades(atual->atividades); // lista as atividades do evento
         atual = atual->prox;
-        } while(atual != lista);
-    }
+    } while (atual != lista);
 }
 
-void removerEvento(Evento **lista, char nome[]){
+// Remove um evento pelo nome
+void removerEvento(Evento **lista, char nome[]) {
     if (*lista == NULL) {
         printf("Nenhum evento para remover.\n");
         return;
@@ -59,7 +60,8 @@ void removerEvento(Evento **lista, char nome[]){
     do {
         if (strcmp(atual->nome, nome) == 0) {
             if (atual == atual->prox) {
-                // Único elemento
+                // Único evento na lista
+                liberarAtividades(&atual->atividades);
                 free(atual);
                 *lista = NULL;
             } else {
@@ -72,9 +74,9 @@ void removerEvento(Evento **lista, char nome[]){
                     *lista = atual->prox;
                     ultimo->prox = *lista;
                 } else {
-                    // Removendo do meio/fim
                     anterior->prox = atual->prox;
                 }
+                liberarAtividades(&atual->atividades);
                 free(atual);
             }
             printf("Evento removido com sucesso.\n");
@@ -85,5 +87,36 @@ void removerEvento(Evento **lista, char nome[]){
     } while (atual != *lista);
 
     printf("Evento não encontrado.\n");
+}
 
+// Busca um evento pelo nome
+Evento* buscarEvento(Evento *lista, char nome[]) {
+    if (lista == NULL) return NULL;
+
+    Evento *atual = lista;
+    do {
+        if (strcmp(atual->nome, nome) == 0)
+            return atual;
+        atual = atual->prox;
+    } while (atual != lista);
+
+    return NULL;
+}
+
+// Libera todos os eventos e suas atividades
+void liberarEventos(Evento **lista) {
+    if (*lista == NULL) return;
+
+    Evento *inicio = *lista;
+    Evento *atual = *lista;
+    Evento *prox;
+
+    do {
+        prox = atual->prox;
+        liberarAtividades(&atual->atividades);
+        free(atual);
+        atual = prox;
+    } while (atual != inicio);
+
+    *lista = NULL;
 }
