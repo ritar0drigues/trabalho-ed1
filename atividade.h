@@ -12,7 +12,7 @@ typedef struct Atividade {
 
 Atividade* criarAtividade(char titulo[], char horario[]);
 void inserirAtividade(Atividade **lista, Atividade *novo);
-void listarAtividades(Atividade *lista);
+void listarAtividades(Atividade *lita);
 void removerAtividade(Atividade **lista, char nome[]);
 Atividade* buscarAtividade(Atividade *lista, char titulo[]);
 void liberarAtividades(Atividade **lista);

@@ -45,6 +45,7 @@ void listarAtividades(Atividade *lista) {
     }
 }
 
+
 // Remove atividade pelo título
 void removerAtividade(Atividade **lista, char titulo[]) {
     if (*lista == NULL) {

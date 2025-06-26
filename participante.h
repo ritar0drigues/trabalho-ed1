@@ -13,7 +13,7 @@ typedef struct Participante{
 // Funções para manipular a lista duplamente encadeada
 Participante* criarParticipante(char nome[], char matricula[], char email[]);
 void inserirParticipante(Participante **lista, Participante *novo);
-void listarParticipantes(Participante *lista);
+void listarParticipante(Participante *lista);
 void removerParticipante(Participante **lista, char matricula[]);
 Participante* buscarParticipante(Participante *lista, char matricula[]);
 void liberarParticipantes(Participante **lista);

@@ -39,6 +39,7 @@ void listarEventos(Evento *lista) {
     }
 
     Evento *atual = lista;
+    printf("--EVENTOS:");
     do {
         printf("\nEvento: %s\n", atual->nome);
         printf("Data: %s\n", atual->data);

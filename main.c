@@ -4,6 +4,7 @@
 #include "evento.h"
 #include "atividade.h"
 #include "participante.h"
+#include "ordenacao.h"
 
 void menu() {
     printf("\n===== MENU PRINCIPAL =====\n");
@@ -32,31 +33,62 @@ int main() {
         getchar(); // consumir '\n'
 
         switch(opcao) {
-            case 1:
-                printf("Nome do evento: ");
-                fgets(nome, sizeof(nome), stdin);
-                nome[strcspn(nome, "\n")] = 0;
+            case 1: {
+                char repetir;
+                repetir = 's';
+                while (repetir == 's'){
+                    printf("Nome do evento: ");
+                    fgets(nome, sizeof(nome), stdin);
+                    nome[strcspn(nome, "\n")] = 0;
 
-                printf("Data (dd/mm/aaaa): ");
-                fgets(data, sizeof(data), stdin);
-                data[strcspn(data, "\n")] = 0;
+                    printf("Data (dd/mm/aaaa): ");
+                    fgets(data, sizeof(data), stdin);
+                    data[strcspn(data, "\n")] = 0;
 
-                inserirEvento(&eventos, criarEvento(nome, data));
+                    Evento *e = criarEvento(nome, data);
+
+                    if (e){
+                        inserirEvento(&eventos, e);
+                        printf("Evento cadastrado com sucesso!\n");
+                    } else {
+                        printf("Erro ao cadastrar evento!\n"); 
+                    }
+
+                    printf("\nDeseja cadastrar outro evento?\n");
+                    printf("Digite 's' para sim e 'n' para nao:");
+                    scanf("%c", &repetir);
+                    getchar();
+                }
+            
                 break;
+            }
 
             case 2:
                 listarEventos(eventos);
                 break;
 
-            case 3:
-                printf("Nome do evento a remover: ");
-                fgets(nome, sizeof(nome), stdin);
-                nome[strcspn(nome, "\n")] = 0;
+            case 3:{
+                char repetir;
+                repetir = 's';
+                while(repetir == 's'){
+                    printf("Nome do evento a remover: ");
+                    fgets(nome, sizeof(nome), stdin);
+                    nome[strcspn(nome, "\n")] = 0;
 
-                removerEvento(&eventos, nome);
+                    removerEvento(&eventos, nome);
+
+                    printf("\nDeseja remover ourtro evento?\n");
+                    printf("Digite 's' para sim e 'n' para nao:");
+                    scanf("%c", &repetir);
+                    getchar();
+                    }
                 break;
+            }
 
             case 4: {
+                char repetir;
+                repetir = 's';
+                while (repetir == 's'){
                 printf("Nome do evento: ");
                 fgets(nome, sizeof(nome), stdin);
                 nome[strcspn(nome, "\n")] = 0;
@@ -76,7 +108,12 @@ int main() {
                 horario[strcspn(horario, "\n")] = 0;
 
                 inserirAtividade(&e->atividades, criarAtividade(titulo, horario));
+                printf("\nDeseja cadastrar outra atividade?\n");
+                printf("Digite 's' para sim e 'n' para nao:");
+                scanf("%c", &repetir);
+                getchar();}
                 break;
+
             }
 
             case 5: {
@@ -94,6 +131,9 @@ int main() {
             }
 
             case 6: {
+                char repetir;
+                repetir = 's';
+                while(repetir == 's'){
                 printf("Nome do evento: ");
                 fgets(nome, sizeof(nome), stdin);
                 nome[strcspn(nome, "\n")] = 0;
@@ -109,10 +149,16 @@ int main() {
                 titulo[strcspn(titulo, "\n")] = 0;
 
                 removerAtividade(&e->atividades, titulo);
+                printf("\nDeseja remover outra atividade?\n");
+                printf("Digite 's' para sim e 'n' para nao:");
+                scanf("%c", &repetir);
+                getchar();}
                 break;
             }
 
             case 7: {
+                char repetir = 's';
+                while (repetir == 's'){
                 printf("Nome do evento: ");
                 fgets(nome, sizeof(nome), stdin);
                 nome[strcspn(nome, "\n")] = 0;
@@ -147,6 +193,11 @@ int main() {
 
                 Participante *p = criarParticipante(nome, matricula, email);
                 inserirParticipante(&a->participantes, p);
+
+                printf("\nDeseja cadastrar outro participante?\n");
+                printf("Digite 's' para sim e 'n' para nao:");
+                scanf("%c", &repetir);
+                getchar();}
                 break;
             }
 
@@ -176,6 +227,8 @@ int main() {
             }
 
             case 9: {
+                char repetir = 's';
+                while (repetir == 's'){
                 printf("Nome do evento: ");
                 fgets(nome, sizeof(nome), stdin);
                 nome[strcspn(nome, "\n")] = 0;
@@ -201,6 +254,10 @@ int main() {
                 matricula[strcspn(matricula, "\n")] = 0;
 
                 removerParticipante(&a->participantes, matricula);
+                printf("\nDeseja remover outro participante?\n");
+                printf("Digite 's' para sim e 'n' para nao:");
+                scanf("%c", &repetir);
+                getchar();}
                 break;
             }
 
