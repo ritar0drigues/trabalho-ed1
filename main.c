@@ -5,6 +5,7 @@
 #include "atividade.h"
 #include "participante.h"
 #include "ordenacao.h"
+#include "pilha.h"
 
 void menu() {
     printf("\n===== MENU PRINCIPAL =====\n");
@@ -17,13 +18,17 @@ void menu() {
     printf("7. Cadastrar participante em uma atividade\n");
     printf("8. Listar participantes de uma atividade\n");
     printf("9. Remover participante de uma atividade\n");
+    printf("10. Desfazer remoção de atividade\n");
+    printf("11. Desfazer remoção de participante\n");
     printf("0. Sair\n");
     printf("==========================\n");
     printf("Escolha uma opção: ");
 }
-
 int main() {
     Evento *eventos = NULL;
+    Pilha *pilhaAtividades = pilha_cria();
+    Pilha *pilhaParticipantes = pilha_cria();
+
     int opcao;
     char nome[100], data[11], titulo[100], horario[6], matricula[20], email[100];
 
@@ -149,7 +154,7 @@ int main() {
                 fgets(titulo, sizeof(titulo), stdin);
                 titulo[strcspn(titulo, "\n")] = 0;
 
-                removerAtividade(&e->atividades, titulo);
+                removerAtividade(&e->atividades, titulo, pilhaAtividades);
                 printf("\nDeseja remover outra atividade?\n");
                 printf("Digite 's' para sim e 'n' para nao:");
                 scanf(" %c", &repetir);
@@ -254,7 +259,7 @@ int main() {
                 fgets(matricula, sizeof(matricula), stdin);
                 matricula[strcspn(matricula, "\n")] = 0;
 
-                removerParticipante(&a->participantes, matricula);
+                removerParticipante(&a->participantes, matricula, pilhaParticipantes);
                 printf("\nDeseja remover outro participante?\n");
                 printf("Digite 's' para sim e 'n' para nao:");
                 scanf(" %c", &repetir);
@@ -262,9 +267,51 @@ int main() {
                 break;
             }
 
+            case 10: {
+                printf("Nome do evento: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = 0;
+
+                Evento *e = buscarEvento(eventos, nome);
+                if (!e) {
+                    printf("Evento não encontrado.\n");
+                    break;
+                }
+
+                desfazerRemocaoAtividade(pilhaAtividades, &e->atividades);
+                break;
+            }
+
+            case 11: {
+                printf("Nome do evento: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = 0;
+
+                Evento *e = buscarEvento(eventos, nome);
+                if (!e) {
+                    printf("Evento não encontrado.\n");
+                    break;
+                }
+
+                printf("Título da atividade: ");
+                fgets(titulo, sizeof(titulo), stdin);
+                titulo[strcspn(titulo, "\n")] = 0;
+
+                Atividade *a = buscarAtividade(e->atividades, titulo);
+                if (!a) {
+                    printf("Atividade não encontrada.\n");
+                    break;
+                }
+
+                desfazerRemocaoParticipante(pilhaParticipantes, &a->participantes);
+                break;
+            }
+
             case 0:
                 printf("Encerrando o sistema...\n");
                 liberarEventos(&eventos);
+                pilha_libera(pilhaAtividades);
+                pilha_libera(pilhaParticipantes);
                 break;
 
             default:

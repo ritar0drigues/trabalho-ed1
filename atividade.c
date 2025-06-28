@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "atividade.h"
+#include "pilha.h"
 
 // Cria uma nova atividade
 Atividade* criarAtividade(char titulo[], char horario[]) {
@@ -19,6 +20,8 @@ Atividade* criarAtividade(char titulo[], char horario[]) {
 
 // Insere atividade no fim da lista
 void inserirAtividade(Atividade **lista, Atividade *nova) {
+    nova->prox= NULL; // limpa ponteiro antigo
+
     if (*lista == NULL) {
         *lista = nova;
     } else {
@@ -46,8 +49,8 @@ void listarAtividades(Atividade *lista) {
 }
 
 
-// Remove atividade pelo título
-void removerAtividade(Atividade **lista, char titulo[]) {
+// Remove atividade da lista e empilha a atividade removida
+void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) {
     if (*lista == NULL) {
         printf("Lista de atividades vazia.\n");
         return;
@@ -58,15 +61,24 @@ void removerAtividade(Atividade **lista, char titulo[]) {
 
     while (atual != NULL) {
         if (strcmp(atual->titulo, titulo) == 0) {
+            // Remove da lista encadeada
             if (anterior == NULL) {
-                // Primeiro da lista
                 *lista = atual->prox;
             } else {
                 anterior->prox = atual->prox;
             }
-            liberarParticipantes(&atual->participantes); // limpa participantes
-            free(atual);
-            printf("Atividade removida com sucesso.\n");
+
+            // Remove participantes internos para evitar memória pendente
+            liberarParticipantes(&atual->participantes);
+            atual->participantes = NULL;
+
+            // Limpa ponteiro para evitar loops ao restaurar
+            atual->prox = NULL;
+
+            // Empilha o ponteiro da atividade removida para possível restauração
+            pilha_inserir(pilhaAtividades, (void *)atual);
+
+            printf("Atividade removida e salva para desfazer.\n");
             return;
         }
         anterior = atual;
@@ -75,7 +87,6 @@ void removerAtividade(Atividade **lista, char titulo[]) {
 
     printf("Atividade não encontrada.\n");
 }
-
 // Busca uma atividade pelo título (caso precise)
 Atividade* buscarAtividade(Atividade *lista, char titulo[]) {
     while (lista != NULL) {
@@ -96,4 +107,24 @@ void liberarAtividades(Atividade **lista) {
         free(temp);
     }
     *lista = NULL;
+}
+
+
+// Desfaz a última remoção de atividade (restaura na lista)
+void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividades) {
+    if (pilha_vazia(pilhaAtividades)) {
+        printf("Nenhuma remoção de atividade para desfazer.\n");
+        return;
+    }
+
+    Atividade *atividade = (Atividade *) pilha_pop(pilhaAtividades);
+
+    if (atividade == NULL) {
+        printf("Erro ao recuperar atividade da pilha.\n");
+        return;
+    }
+
+    // Reinsere atividade na lista
+    inserirAtividade(listaAtividades, atividade);
+    printf("Desfazer: atividade '%s' restaurada com sucesso.\n", atividade->titulo);
 }

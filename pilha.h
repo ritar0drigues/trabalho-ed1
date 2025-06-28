@@ -1,41 +1,30 @@
 #ifndef PILHA_H
 #define PILHA_H
 
-#include "participante.h"
-#include "atividade.h"
-#include "evento.h"
+// Estrutura do nó da pilha genérica
+typedef struct no {
+    void *dado;         // Ponteiro genérico para qualquer tipo (Atividade ou Participante)
+    struct no *prox;    // Próximo nó
+} no;
 
-typedef struct no{
-    int valor;
-    struct no *prox;
-}no;
+// Estrutura da pilha
+typedef struct {
+    no *topo;           // Ponteiro para o topo da pilha
+} Pilha;
 
-typedef struct pilha{
-    no *topo;
-} pilha;
+// Cria e retorna uma nova pilha vazia
+Pilha *pilha_cria(void);
 
-Pilha *pilha_vazia(void){
-    Pilha *p = (Pilha*) malloc(sizeof(Pilha));
-    if(p!= NULL){
-        p->topo = NULL;
-        return p;
-    }
-}
+// Insere um novo item no topo da pilha
+void pilha_inserir(Pilha *p, void *dado);
 
-void Inserir(Pilha *p, int valor){
-    no *novo = (no*)malloc(sizeof(no));
-    if(novo == NULL){
-        printf("Erro de alocação.\n");
-        exit(1);
-    }
-    novo->valor = valor;
-    novo->prox=p->topo;
-    p->topo = novo;
-}
+// Remove e retorna o item do topo da pilha
+void *pilha_pop(Pilha *p);
 
-int pilha_pop(Pilha *p){
-    if(pilha_vazia(p)){
-        
-    }
-}
+// Verifica se a pilha está vazia (1 = sim, 0 = não)
+int pilha_vazia(Pilha *p);
+
+// Libera toda a memória da pilha (mas não libera os dados)
+void pilha_libera(Pilha *p);
+
 #endif

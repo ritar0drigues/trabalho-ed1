@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "participante.h"
+#include "pilha.h"
 
 // Cria e inicializa um novo participante
 Participante* criarParticipante(char nome[], char matricula[], char email[]) {
@@ -20,6 +21,9 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
 
 // Insere no fim da lista
 void inserirParticipante(Participante **lista, Participante *novo) {
+    novo->prox = NULL;  // Evita loops com ponteiros antigos
+    novo->ant = NULL;
+
     if (*lista == NULL) {
         *lista = novo;
     } else {
@@ -31,6 +35,7 @@ void inserirParticipante(Participante **lista, Participante *novo) {
         novo->ant = atual;
     }
 }
+
 
 // Lista todos os participantes
 void listarParticipantes(Participante *lista) {
@@ -48,8 +53,9 @@ void listarParticipantes(Participante *lista) {
     }
 }
 
-// Remove participante com base na matrícula
-void removerParticipante(Participante **lista, char matricula[]) {
+
+// Remove participante da lista e empilha o participante removido
+void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaParticipantes) {
     if (*lista == NULL) {
         printf("Lista de participantes vazia.\n");
         return;
@@ -59,6 +65,7 @@ void removerParticipante(Participante **lista, char matricula[]) {
 
     while (atual != NULL) {
         if (strcmp(atual->matricula, matricula) == 0) {
+            // Remove da lista duplamente encadeada
             if (atual->ant == NULL) {
                 // Primeiro da lista
                 *lista = atual->prox;
@@ -71,16 +78,17 @@ void removerParticipante(Participante **lista, char matricula[]) {
                     atual->prox->ant = atual->ant;
                 }
             }
-            free(atual);
-            printf("Participante removido com sucesso.\n");
-            return;
+
+            // Empilha o ponteiro do participante removido para possível restauração
+            atual->prox = NULL;
+            atual->ant = NULL;
+            pilha_inserir(pilhaParticipantes, (void *)atual);
         }
         atual = atual->prox;
     }
 
     printf("Participante não encontrado.\n");
 }
-
 // Busca participante pela matrícula
 Participante* buscarParticipante(Participante *lista, char matricula[]) {
     while (lista != NULL) {
@@ -100,4 +108,23 @@ void liberarParticipantes(Participante **lista) {
         free(temp);
     }
     *lista = NULL;
+}
+
+// Desfaz a última remoção de participante (restaura na lista)
+void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **listaParticipantes) {
+    if (pilha_vazia(pilhaParticipantes)) {
+        printf("Nenhuma remoção de participante para desfazer.\n");
+        return;
+    }
+
+    Participante *participante = (Participante *) pilha_pop(pilhaParticipantes);
+
+    if (participante == NULL) {
+        printf("Erro ao recuperar participante da pilha.\n");
+        return;
+    }
+
+    // Reinsere participante na lista
+    inserirParticipante(listaParticipantes, participante);
+    printf("Desfazer: participante '%s' restaurado com sucesso.\n", participante->nome);
 }
