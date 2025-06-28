@@ -2,6 +2,7 @@
 #define ATIVIDADE_H
 
 #include "participante.h"
+#include "pilha.h"
 
 typedef struct Atividade {
     char titulo[100];
@@ -13,7 +14,8 @@ typedef struct Atividade {
 Atividade* criarAtividade(char titulo[], char horario[]);
 void inserirAtividade(Atividade **lista, Atividade *novo);
 void listarAtividades(Atividade *lita);
-void removerAtividade(Atividade **lista, char nome[]);
+void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades);
+void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividades);
 Atividade* buscarAtividade(Atividade *lista, char titulo[]);
 void liberarAtividades(Atividade **lista);
 
