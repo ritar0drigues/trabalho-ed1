@@ -20,6 +20,8 @@ Atividade* criarAtividade(char titulo[], char horario[]) {
 
 // Insere atividade no fim da lista
 void inserirAtividade(Atividade **lista, Atividade *nova) {
+    nova->prox= NULL; // limpa ponteiro antigo
+
     if (*lista == NULL) {
         *lista = nova;
     } else {
@@ -69,6 +71,9 @@ void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) 
             // Remove participantes internos para evitar memória pendente
             liberarParticipantes(&atual->participantes);
             atual->participantes = NULL;
+
+            // Limpa ponteiro para evitar loops ao restaurar
+            atual->prox = NULL;
 
             // Empilha o ponteiro da atividade removida para possível restauração
             pilha_inserir(pilhaAtividades, (void *)atual);

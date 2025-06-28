@@ -21,6 +21,9 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
 
 // Insere no fim da lista
 void inserirParticipante(Participante **lista, Participante *novo) {
+    novo->prox = NULL;  // Evita loops com ponteiros antigos
+    novo->ant = NULL;
+
     if (*lista == NULL) {
         *lista = novo;
     } else {
@@ -32,6 +35,7 @@ void inserirParticipante(Participante **lista, Participante *novo) {
         novo->ant = atual;
     }
 }
+
 
 // Lista todos os participantes
 void listarParticipantes(Participante *lista) {
@@ -76,10 +80,9 @@ void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaPar
             }
 
             // Empilha o ponteiro do participante removido para possível restauração
+            atual->prox = NULL;
+            atual->ant = NULL;
             pilha_inserir(pilhaParticipantes, (void *)atual);
-
-            printf("Participante removido e salvo para desfazer.\n");
-            return;
         }
         atual = atual->prox;
     }
