@@ -7,6 +7,7 @@ typedef struct Participante{
     char nome[100];
     char matricula[20];
     char email[100];
+    int registrado;
     struct Participante *ant;
     struct Participante *prox;
 } Participante;

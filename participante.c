@@ -16,6 +16,7 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
     strcpy(novo->email, email);
     novo->ant = NULL;
     novo->prox = NULL;
+    novo->registrado = 0;  // Ainda não enfileirado
     return novo;
 }
 
@@ -83,6 +84,7 @@ void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaPar
             atual->prox = NULL;
             atual->ant = NULL;
             pilha_inserir(pilhaParticipantes, (void *)atual);
+            return;
         }
         atual = atual->prox;
     }

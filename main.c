@@ -6,6 +6,7 @@
 #include "participante.h"
 #include "ordenacao.h"
 #include "pilha.h"
+#include "fila.h"
 
 void menu() {
     printf("\n===== MENU PRINCIPAL =====\n");
@@ -20,6 +21,7 @@ void menu() {
     printf("9. Remover participante de uma atividade\n");
     printf("10. Desfazer remoção de atividade\n");
     printf("11. Desfazer remoção de participante\n");
+    printf("12. Listar ordem de chegada dos participantes\n");
     printf("0. Sair\n");
     printf("==========================\n");
     printf("Escolha uma opção: ");
@@ -28,6 +30,8 @@ int main() {
     Evento *eventos = NULL;
     Pilha *pilhaAtividades = pilha_cria();
     Pilha *pilhaParticipantes = pilha_cria();
+    Fila *filaChegada = fila_cria();
+
 
     int opcao;
     char nome[100], data[11], titulo[100], horario[6], matricula[20], email[100];
@@ -199,6 +203,10 @@ int main() {
 
                 Participante *p = criarParticipante(nome, matricula, email);
                 inserirParticipante(&a->participantes, p);
+               if (!p->registrado) {
+                    fila_inserir(filaChegada, p);
+                    p->registrado = 1;  // Marca como já registrado
+                }
 
                 printf("\nDeseja cadastrar outro participante?\n");
                 printf("Digite 's' para sim e 'n' para nao:");
@@ -306,12 +314,19 @@ int main() {
                 desfazerRemocaoParticipante(pilhaParticipantes, &a->participantes);
                 break;
             }
+            
+            case 12: {
+                fila_imprimir(filaChegada);
+                break;
+            }
 
             case 0:
                 printf("Encerrando o sistema...\n");
                 liberarEventos(&eventos);
                 pilha_libera(pilhaAtividades);
                 pilha_libera(pilhaParticipantes);
+                fila_libera(filaChegada);
+
                 break;
 
             default:
