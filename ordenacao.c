@@ -17,7 +17,7 @@ void listarAtividades(Atividade *lista) {
     }
 }
 
-// Lista todos os participantes
+// Lista todos os participante
 void bubbleSortlistarRecursiv(Participante *lista, int n) {
     if (n == 1) 
         return;
