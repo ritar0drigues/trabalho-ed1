@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "evento.h"
+#include "atividade.h"
 
 // Cria um evento com nome e data
 Evento* criarEvento(char nome[], char data[]) {
@@ -43,7 +44,7 @@ void listarEventos(Evento *lista) {
     do {
         printf("\nEvento: %s\n", atual->nome);
         printf("Data: %s\n", atual->data);
-        listarAtividades(atual->atividades); // lista as atividades do evento
+        listarAtividadesSemOrdenar(atual->atividades); // lista as atividades do evento
         atual = atual->prox;
     } while (atual != lista);
 }

@@ -4,6 +4,7 @@
 #include "participante.h"
 #include "pilha.h"
 
+
 // Cria e inicializa um novo participante
 Participante* criarParticipante(char nome[], char matricula[], char email[]) {
     Participante *novo = malloc(sizeof(Participante));
@@ -37,15 +38,14 @@ void inserirParticipante(Participante **lista, Participante *novo) {
     }
 }
 
-
-// Lista todos os participantes
-void listarParticipantes(Participante *lista) {
-    if (lista == NULL) {
+// Lista os participantes da lista duplamente encadeada
+void listarParticipantes(Participante **lista) {
+    if (*lista == NULL) {
         printf("Nenhum participante cadastrado.\n");
         return;
     }
 
-    Participante *atual = lista;
+    Participante *atual = *lista;
     while (atual != NULL) {
         printf("\nNome: %s\n", atual->nome);
         printf("Matrícula: %s\n", atual->matricula);
@@ -54,6 +54,101 @@ void listarParticipantes(Participante *lista) {
     }
 }
 
+// Função para copiar a lista de participantes (cria nova lista com mesmo conteúdo)
+Participante* copiarListaParticipantes(Participante *origem) {
+    Participante *copia = NULL, *fim = NULL;
+
+    while (origem != NULL) {
+        Participante *novo = malloc(sizeof(Participante));
+        if (!novo) {
+            printf("Erro de memória.\n");
+            liberarParticipantes(&copia);
+            return NULL;
+        }
+        strcpy(novo->nome, origem->nome);
+        strcpy(novo->matricula, origem->matricula);
+        strcpy(novo->email, origem->email);
+        novo->prox = NULL;
+        novo->ant = fim;
+
+        if (fim != NULL)
+            fim->prox = novo;
+        else
+            copia = novo;
+
+        fim = novo;
+        origem = origem->prox;
+    }
+    return copia;
+}
+
+// Função de Insertion Sort para ordenar a lista duplamente encadeada por nome
+Participante* insertionSortParticipantes(Participante *head) {
+    Participante *sorted = NULL;
+
+    while (head != NULL) {
+        Participante *atual = head;
+        head = head->prox;
+
+        // Desconecta o nó para inserção
+        atual->ant = atual->prox = NULL;
+
+        Participante *p = sorted;
+        Participante *prev = NULL;
+        // Procura a posição de inserção na lista 'sorted'
+        while (p != NULL && strcmp(p->nome, atual->nome) < 0) {
+            prev = p;
+            p = p->prox;
+        }
+
+        if (prev == NULL) {
+            // Insere no início da lista ordenada
+            atual->prox = sorted;
+            if (sorted)
+                sorted->ant = atual;
+            sorted = atual;
+        } else {
+            // Insere entre 'prev' e 'p'
+            atual->prox = prev->prox;
+            atual->ant = prev;
+            if (prev->prox)
+                prev->prox->ant = atual;
+            prev->prox = atual;
+        }
+    }
+
+    return sorted;
+}
+
+// Função para listar os participantes ordenados por nome (usa cópia para manter a lista original)
+void listarParticipantesOrdenado(Participante **lista) {
+    if (*lista == NULL) {
+        printf("Nenhum participante cadastrado.\n");
+        return;
+    }
+
+    // Copia a lista original
+    Participante *copia = copiarListaParticipantes(*lista);
+    if (copia == NULL) {
+        printf("Erro ao copiar a lista.\n");
+        return;
+    }
+
+    // Ordena a cópia usando insertion sort
+    copia = insertionSortParticipantes(copia);
+
+    // Exibe a lista ordenada
+    Participante *atual = copia;
+    while (atual != NULL) {
+        printf("\nNome: %s\n", atual->nome);
+        printf("Matrícula: %s\n", atual->matricula);
+        printf("Email: %s\n", atual->email);
+        atual = atual->prox;
+    }
+
+    // Libera a memória da cópia para evitar vazamentos
+    liberarParticipantes(&copia);
+}
 
 // Remove participante da lista e empilha o participante removido
 void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaParticipantes) {
@@ -91,26 +186,7 @@ void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaPar
 
     printf("Participante não encontrado.\n");
 }
-// Busca participante pela matrícula
-Participante* buscarParticipante(Participante *lista, char matricula[]) {
-    while (lista != NULL) {
-        if (strcmp(lista->matricula, matricula) == 0)
-            return lista;
-        lista = lista->prox;
-    }
-    return NULL;
-}
 
-// Libera a memória de todos os participantes da lista
-void liberarParticipantes(Participante **lista) {
-    Participante *atual = *lista;
-    while (atual != NULL) {
-        Participante *temp = atual;
-        atual = atual->prox;
-        free(temp);
-    }
-    *lista = NULL;
-}
 
 // Desfaz a última remoção de participante (restaura na lista)
 void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **listaParticipantes) {
@@ -130,3 +206,16 @@ void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **lista
     inserirParticipante(listaParticipantes, participante);
     printf("Desfazer: participante '%s' restaurado com sucesso.\n", participante->nome);
 }
+
+
+// Libera a memória de todos os participantes da lista
+void liberarParticipantes(Participante **lista) {
+    Participante *atual = *lista;
+    while (atual != NULL) {
+        Participante *temp = atual;
+        atual = atual->prox;
+        free(temp);
+    }
+    *lista = NULL;
+}
+
