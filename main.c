@@ -4,7 +4,6 @@
 #include "evento.h"
 #include "atividade.h"
 #include "participante.h"
-#include "ordenacao.h"
 #include "pilha.h"
 #include "fila.h"
 
@@ -132,10 +131,25 @@ int main() {
                 nome[strcspn(nome, "\n")] = 0;
 
                 Evento *e = buscarEvento(eventos, nome);
-                if (e) {
-                    listarAtividades(e->atividades);
-                } else {
+                if (!e) {
                     printf("Evento não encontrado.\n");
+                    break;
+                }
+
+                printf("Como deseja listar as atividades?\n");
+                printf("1 - Ordem original\n");
+                printf("2 - Ordenado por horário\n");
+                printf("Opção: ");
+                int opcao;
+                scanf("%d", &opcao);
+                getchar(); // limpa o '\n'
+
+                if (opcao == 1) {
+                    listarAtividadesSemOrdenar(e->atividades);
+                } else if (opcao == 2) {
+                    listarAtividadesOrdenadas(e->atividades);
+                } else {
+                    printf("Opção inválida.\n");
                 }
                 break;
             }
@@ -236,9 +250,25 @@ int main() {
                     break;
                 }
 
-                listarParticipantes(a->participantes);
+                printf("\nComo deseja listar os participantes?\n");
+                printf("1 - Ordem original\n");
+                printf("2 - Ordenado por nome (A-Z)\n");
+                printf("Opção: ");
+                int opcao;
+                scanf("%d", &opcao);
+                getchar(); // Limpa o \n do buffer
+
+                if (opcao == 1) {
+                    listarParticipantes(&a->participantes);
+                } else if (opcao == 2) {
+                    listarParticipantesOrdenado(&a->participantes);
+                } else {
+                    printf("Opção inválida.\n");
+                }
+
                 break;
             }
+
 
             case 9: {
                 char repetir = 's';

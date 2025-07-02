@@ -33,8 +33,95 @@ void inserirAtividade(Atividade **lista, Atividade *nova) {
     }
 }
 
-// Lista todas as atividades
-void listarAtividades(Atividade *lista) {
+// Divide a lista em duas metades
+void dividirLista(Atividade *origem, Atividade **frente, Atividade **tras) {
+    Atividade *rapido;
+    Atividade *lento;
+    if (origem == NULL || origem->prox == NULL) {
+        *frente = origem;
+        *tras = NULL;
+    } else {
+        lento = origem;
+        rapido = origem->prox;
+
+        while (rapido != NULL) {
+            rapido = rapido->prox;
+            if (rapido != NULL) {
+                lento = lento->prox;
+                rapido = rapido->prox;
+            }
+        }
+
+        *frente = origem;
+        *tras = lento->prox;
+        lento->prox = NULL;
+    }
+}
+
+// Intercala duas listas ordenadas por horário
+Atividade* intercalarListas(Atividade *a, Atividade *b) {
+    Atividade *resultado = NULL;
+
+    if (a == NULL) return b;
+    else if (b == NULL) return a;
+
+    if (strcmp(a->horario, b->horario) <= 0) {
+        resultado = a;
+        resultado->prox = intercalarListas(a->prox, b);
+    } else {
+        resultado = b;
+        resultado->prox = intercalarListas(a, b->prox);
+    }
+
+    return resultado;
+}
+
+// Função principal de ordenação com Merge Sort
+void mergeSortAtividades(Atividade **cabecaRef) {
+    Atividade *cabeca = *cabecaRef;
+    Atividade *a;
+    Atividade *b;
+
+    if ((cabeca == NULL) || (cabeca->prox == NULL)) {
+        return;
+    }
+
+    dividirLista(cabeca, &a, &b);
+
+    mergeSortAtividades(&a);
+    mergeSortAtividades(&b);
+
+    *cabecaRef = intercalarListas(a, b);
+}
+
+
+void listarAtividadesOrdenadas(Atividade *lista) {
+    if (lista == NULL) {
+        printf("Nenhuma atividade cadastrada.\n");
+        return;
+    }
+
+    // Faz uma cópia da lista
+    Atividade *copia = NULL;
+    Atividade *atual = lista;
+    while (atual != NULL) {
+        Atividade *nova = criarAtividade(atual->titulo, atual->horario);
+        inserirAtividade(&copia, nova);
+        atual = atual->prox;
+    }
+
+    // Ordena a cópia
+    mergeSortAtividades(&copia);
+
+    // Imprime lista ordenada
+    listarAtividadesSemOrdenar(copia);
+
+    // Libera a cópia
+    liberarAtividades(&copia);
+}
+
+
+void listarAtividadesSemOrdenar(Atividade *lista) {
     if (lista == NULL) {
         printf("Nenhuma atividade cadastrada.\n");
         return;
@@ -87,27 +174,6 @@ void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) 
 
     printf("Atividade não encontrada.\n");
 }
-// Busca uma atividade pelo título (caso precise)
-Atividade* buscarAtividade(Atividade *lista, char titulo[]) {
-    while (lista != NULL) {
-        if (strcmp(lista->titulo, titulo) == 0)
-            return lista;
-        lista = lista->prox;
-    }
-    return NULL;
-}
-
-// Libera toda a lista de atividades
-void liberarAtividades(Atividade **lista) {
-    Atividade *atual = *lista;
-    while (atual != NULL) {
-        Atividade *temp = atual;
-        atual = atual->prox;
-        liberarParticipantes(&temp->participantes);
-        free(temp);
-    }
-    *lista = NULL;
-}
 
 
 // Desfaz a última remoção de atividade (restaura na lista)
@@ -127,4 +193,27 @@ void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividade
     // Reinsere atividade na lista
     inserirAtividade(listaAtividades, atividade);
     printf("Desfazer: atividade '%s' restaurada com sucesso.\n", atividade->titulo);
+}
+
+// Busca uma atividade pelo título (caso precise)
+Atividade* buscarAtividade(Atividade *lista, char titulo[]) {
+    while (lista != NULL) {
+        if (strcmp(lista->titulo, titulo) == 0)
+            return lista;
+        lista = lista->prox;
+    }
+    return NULL;
+}
+
+
+// Libera toda a lista de atividades
+void liberarAtividades(Atividade **lista) {
+    Atividade *atual = *lista;
+    while (atual != NULL) {
+        Atividade *temp = atual;
+        atual = atual->prox;
+        liberarParticipantes(&temp->participantes);
+        free(temp);
+    }
+    *lista = NULL;
 }

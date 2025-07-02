@@ -15,10 +15,12 @@ typedef struct Participante{
 // Funções para manipular a lista duplamente encadeada
 Participante* criarParticipante(char nome[], char matricula[], char email[]);
 void inserirParticipante(Participante **lista, Participante *novo);
-void listarParticipante(Participante *lista);
+void listarParticipantes(Participante **lista);
+Participante* copiarListaParticipantes(Participante *origem);
+Participante* insertionSortParticipantes(Participante *head);
+void listarParticipantesOrdenado(Participante **lista);
 void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaParticipantes);
 void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **listaParticipantes);
-Participante* buscarParticipante(Participante *lista, char matricula[]);
 void liberarParticipantes(Participante **lista);
 
 #endif
