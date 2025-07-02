@@ -54,13 +54,7 @@ int main() {
                     data[strcspn(data, "\n")] = 0;
 
                     Evento *e = criarEvento(nome, data);
-
-                    if (e){
-                        inserirEvento(&eventos, e);
-                        printf("Evento cadastrado com sucesso!\n");
-                    } else {
-                        printf("Erro ao cadastrar evento!\n"); 
-                    }
+                    inserirEvento(&eventos, e);
 
                     printf("\nDeseja cadastrar outro evento?\n");
                     printf("Digite 's' para sim e 'n' para nao:");

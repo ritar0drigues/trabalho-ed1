@@ -18,8 +18,28 @@ Evento* criarEvento(char nome[], char data[]) {
     return novo;
 }
 
+// Verifica se já existe um evento com mesmo nome e data
+int verificarEventoExistente(Evento *lista, char nome[], char data[]) {
+    if (lista == NULL) return 0;
+
+    Evento *atual = lista;
+    do {
+        if (strcmp(atual->nome, nome) == 0 && strcmp(atual->data, data) == 0)
+            return 1;
+        atual = atual->prox;
+    } while (atual != lista);
+
+    return 0;
+}
+
 // Insere um evento na lista circular
 void inserirEvento(Evento **lista, Evento *novo) {
+    if (verificarEventoExistente(*lista, novo->nome, novo->data)) {
+        printf("Erro: Já existe um evento '%s' cadastrado na data %s!\n", novo->nome, novo->data);
+        free(novo);
+        return;
+    }
+
     if (*lista == NULL) {
         *lista = novo;
     } else {
@@ -30,6 +50,7 @@ void inserirEvento(Evento **lista, Evento *novo) {
         atual->prox = novo;
         novo->prox = *lista;
     }
+    printf("Evento '%s' cadastrado com sucesso!\n", novo->nome);
 }
 
 // Lista todos os eventos
