@@ -233,7 +233,6 @@ int main() {
                     printf("Evento não encontrado.\n");
                     break;
                 }
-
                 printf("Título da atividade: ");
                 fgets(titulo, sizeof(titulo), stdin);
                 titulo[strcspn(titulo, "\n")] = 0;
