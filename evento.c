@@ -18,13 +18,13 @@ Evento* criarEvento(char nome[], char data[]) {
     return novo;
 }
 
-// Verifica se já existe um evento com mesmo nome e data
+// Verifica se já existe um evento com mesmo nome
 int verificarEventoExistente(Evento *lista, char nome[], char data[]) {
     if (lista == NULL) return 0;
 
     Evento *atual = lista;
     do {
-        if (strcmp(atual->nome, nome) == 0 && strcmp(atual->data, data) == 0)
+        if (strcmp(atual->nome, nome) == 0)
             return 1;
         atual = atual->prox;
     } while (atual != lista);
@@ -35,7 +35,8 @@ int verificarEventoExistente(Evento *lista, char nome[], char data[]) {
 // Insere um evento na lista circular
 void inserirEvento(Evento **lista, Evento *novo) {
     if (verificarEventoExistente(*lista, novo->nome, novo->data)) {
-        printf("Erro: Já existe um evento '%s' cadastrado na data %s!\n", novo->nome, novo->data);
+        printf("Erro: Já existe um evento com o nome '%s'!\n", novo->nome);
+        printf("Obs: O nome do evento deve ser único.\n");
         free(novo);
         return;
     }

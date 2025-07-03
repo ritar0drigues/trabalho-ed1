@@ -18,9 +18,26 @@ Atividade* criarAtividade(char titulo[], char horario[]) {
     return nova;
 }
 
+int verificarAtividadeExistente(Atividade *lista, char titulo[]) {
+    Atividade *atual = lista;
+    while (atual != NULL) {
+        if (strcmp(atual->titulo, titulo) == 0) {
+            return 1; // Atividade já existe
+        }
+        atual = atual->prox;
+    }
+    return 0; // Atividade não existe
+}
+
 // Insere atividade no fim da lista
 void inserirAtividade(Atividade **lista, Atividade *nova) {
-    nova->prox= NULL; // limpa ponteiro antigo
+    if (verificarAtividadeExistente(*lista, nova->titulo)) {
+        printf("Erro: Já existe uma atividade com o título '%s'.\n", nova->titulo);
+        free(nova); // Libera a memória da nova atividade
+        return;
+    }
+
+    nova->prox = NULL; // limpa ponteiro antigo
 
     if (*lista == NULL) {
         *lista = nova;
