@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "fila.h"
 
 Fila *fila_cria(void) {
@@ -32,17 +33,38 @@ void fila_inserir(Fila *f, Participante *p) {
     f->fim = novo;
 }
 
+int fila_contem_participante(Fila *f, char matricula[]) {
+    if (fila_vazia(f)) return 0;
+    
+    nofila *atual = f->inicio;
+    while (atual != NULL) {
+        if (strcmp(atual->valor->matricula, matricula) == 0) {
+            return 1;
+        }
+        atual = atual->prox;
+    }
+    return 0;
+}
+
 void fila_imprimir(Fila *f) {
     if (fila_vazia(f)) {
-        printf("Fila vazia.\n");
+        printf("\n----------------------------------------\n");
+        printf("Nenhum participante registrado ainda.\n");
+        printf("----------------------------------------\n");
         return;
     }
 
     nofila *atual = f->inicio;
-    printf("Ordem de chegada dos participantes:\n");
+    int posicao = 1;
+    printf("\n----------------------------------------\n");
+    printf("      ORDEM DE CHEGADA DOS PARTICIPANTES    \n");
+    printf("----------------------------------------\n");
     while (atual != NULL) {
-        printf("- %s (%s)\n", atual->valor->nome, atual->valor->matricula);
+        printf("%d. Nome: %s\n", posicao, atual->valor->nome);
+        printf("   Matrícula: %s\n", atual->valor->matricula);
+        printf("----------------------------------------\n");
         atual = atual->prox;
+        posicao++;
     }
 }
 
