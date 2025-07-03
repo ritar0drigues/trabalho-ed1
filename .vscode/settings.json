@@ -59,6 +59,7 @@
   "files.associations": {
     "*.pl": "prolog",
     "atividade.h": "c",
-    "participante.h": "c"
+    "participante.h": "c",
+    "pilha.h": "c"
   }
 }
