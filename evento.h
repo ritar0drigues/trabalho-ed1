@@ -25,6 +25,9 @@ void removerEvento(Evento **lista, char nome[]);
 // Busca evento pelo nome
 Evento* buscarEvento(Evento *lista, char nome[]);
 
+// Verifica se já existe um evento com mesmo nome e data
+int verificarEventoExistente(Evento *lista, char nome[], char data[]);
+
 // Libera toda a lista de eventos (e suas atividades)
 void liberarEventos(Evento **lista);
 

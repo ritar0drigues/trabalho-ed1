@@ -22,7 +22,25 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
 }
 
 // Insere no fim da lista
+
+int verificarParticipanteExistente(Participante *lista, char matricula[]) {
+    Participante *atual = lista;
+    while (atual != NULL) {
+        if (strcmp(atual->matricula, matricula) == 0) {
+            return 1; // Participante já existe
+        }
+        atual = atual->prox;
+    }
+    return 0; 
+}
+
 void inserirParticipante(Participante **lista, Participante *novo) {
+    if (verificarParticipanteExistente(*lista, novo->matricula)) {
+        printf("Erro: Participante com matrícula '%s' já existe.\n", novo->matricula);
+        free(novo);  // Libera a memória do novo participante
+        return;
+    }
+
     novo->prox = NULL;  // Evita loops com ponteiros antigos
     novo->ant = NULL;
 
