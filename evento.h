@@ -28,4 +28,7 @@ Evento* buscarEvento(Evento *lista, char nome[]);
 // Libera toda a lista de eventos (e suas atividades)
 void liberarEventos(Evento **lista);
 
+// Converte string para minúsculas
+void toLowerCase(char *str);
+
 #endif

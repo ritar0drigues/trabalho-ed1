@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>  // Para tolower
 #include "atividade.h"
 #include "pilha.h"
+
+// Converte string para minúsculas
+void toLowerCase(char *str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower((unsigned char)str[i]);
+    }
+}
 
 // Cria uma nova atividade
 Atividade* criarAtividade(char titulo[], char horario[]) {
@@ -11,6 +19,7 @@ Atividade* criarAtividade(char titulo[], char horario[]) {
         printf("Erro ao alocar memória para atividade.\n");
         exit(1);
     }
+    toLowerCase(titulo);
     strcpy(nova->titulo, titulo);
     strcpy(nova->horario, horario);
     nova->participantes = NULL;
@@ -18,9 +27,26 @@ Atividade* criarAtividade(char titulo[], char horario[]) {
     return nova;
 }
 
-// Insere atividade no fim da lista
+// Verifica se já existe atividade com mesmo título
+int atividadeExiste(Atividade *lista, char titulo[]) {
+    toLowerCase(titulo);
+    while (lista != NULL) {
+        if (strcmp(lista->titulo, titulo) == 0)
+            return 1;
+        lista = lista->prox;
+    }
+    return 0;
+}
+
+// Insere atividade no fim da lista (se não for duplicada)
 void inserirAtividade(Atividade **lista, Atividade *nova) {
-    nova->prox= NULL; // limpa ponteiro antigo
+    if (atividadeExiste(*lista, nova->titulo)) {
+        printf("Já existe uma atividade com esse título.\n");
+        free(nova);  // evita vazamento de memória
+        return;
+    }
+
+    nova->prox = NULL;
 
     if (*lista == NULL) {
         *lista = nova;
@@ -94,7 +120,6 @@ void mergeSortAtividades(Atividade **cabecaRef) {
     *cabecaRef = intercalarListas(a, b);
 }
 
-
 void listarAtividadesOrdenadas(Atividade *lista) {
     if (lista == NULL) {
         printf("Nenhuma atividade cadastrada.\n");
@@ -120,7 +145,6 @@ void listarAtividadesOrdenadas(Atividade *lista) {
     liberarAtividades(&copia);
 }
 
-
 void listarAtividadesSemOrdenar(Atividade *lista) {
     if (lista == NULL) {
         printf("Nenhuma atividade cadastrada.\n");
@@ -135,7 +159,6 @@ void listarAtividadesSemOrdenar(Atividade *lista) {
     }
 }
 
-
 // Remove atividade da lista e empilha a atividade removida
 void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) {
     if (*lista == NULL) {
@@ -143,28 +166,24 @@ void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) 
         return;
     }
 
+    toLowerCase(titulo);
+
     Atividade *atual = *lista;
     Atividade *anterior = NULL;
 
     while (atual != NULL) {
         if (strcmp(atual->titulo, titulo) == 0) {
-            // Remove da lista encadeada
             if (anterior == NULL) {
                 *lista = atual->prox;
             } else {
                 anterior->prox = atual->prox;
             }
 
-            // Remove participantes internos para evitar memória pendente
             liberarParticipantes(&atual->participantes);
             atual->participantes = NULL;
-
-            // Limpa ponteiro para evitar loops ao restaurar
             atual->prox = NULL;
 
-            // Empilha o ponteiro da atividade removida para possível restauração
             pilha_inserir(pilhaAtividades, (void *)atual);
-
             printf("Atividade removida e salva para desfazer.\n");
             return;
         }
@@ -175,8 +194,7 @@ void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) 
     printf("Atividade não encontrada.\n");
 }
 
-
-// Desfaz a última remoção de atividade (restaura na lista)
+// Desfaz a última remoção de atividade
 void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividades) {
     if (pilha_vazia(pilhaAtividades)) {
         printf("Nenhuma remoção de atividade para desfazer.\n");
@@ -190,13 +208,13 @@ void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividade
         return;
     }
 
-    // Reinsere atividade na lista
     inserirAtividade(listaAtividades, atividade);
     printf("Desfazer: atividade '%s' restaurada com sucesso.\n", atividade->titulo);
 }
 
-// Busca uma atividade pelo título (caso precise)
+// Busca uma atividade pelo título
 Atividade* buscarAtividade(Atividade *lista, char titulo[]) {
+    toLowerCase(titulo);
     while (lista != NULL) {
         if (strcmp(lista->titulo, titulo) == 0)
             return lista;
@@ -204,7 +222,6 @@ Atividade* buscarAtividade(Atividade *lista, char titulo[]) {
     }
     return NULL;
 }
-
 
 // Libera toda a lista de atividades
 void liberarAtividades(Atividade **lista) {
