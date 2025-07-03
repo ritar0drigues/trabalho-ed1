@@ -172,11 +172,7 @@ void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades) 
                 anterior->prox = atual->prox;
             }
 
-            // Remove participantes internos para evitar memória pendente
-            liberarParticipantes(&atual->participantes);
-            atual->participantes = NULL;
-
-            // Limpa ponteiro para evitar loops ao restaurar
+            // Não libera os participantes mais, apenas limpa o ponteiro prox
             atual->prox = NULL;
 
             // Empilha o ponteiro da atividade removida para possível restauração
@@ -207,9 +203,26 @@ void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividade
         return;
     }
 
-    // Reinsere atividade na lista
-    inserirAtividade(listaAtividades, atividade);
-    printf("Desfazer: atividade '%s' restaurada com sucesso.\n", atividade->titulo);
+    // Reinsere atividade na lista mantendo seus participantes
+    if (!verificarAtividadeExistente(*listaAtividades, atividade->titulo)) {
+        atividade->prox = NULL; // Garante que o ponteiro prox está limpo
+        
+        if (*listaAtividades == NULL) {
+            *listaAtividades = atividade;
+        } else {
+            Atividade *atual = *listaAtividades;
+            while (atual->prox != NULL) {
+                atual = atual->prox;
+            }
+            atual->prox = atividade;
+        }
+        printf("Desfazer: atividade '%s' restaurada com sucesso.\n", atividade->titulo);
+    } else {
+        printf("Erro: Já existe uma atividade com o título '%s'.\n", atividade->titulo);
+        // Se houver conflito, precisamos liberar a memória para evitar vazamento
+        liberarParticipantes(&atividade->participantes);
+        free(atividade);
+    }
 }
 
 // Busca uma atividade pelo título (caso precise)
