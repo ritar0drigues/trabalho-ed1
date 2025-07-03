@@ -3,7 +3,8 @@
 #include <string.h>
 #include "participante.h"
 #include "pilha.h"
-
+#include "utils.h"
+#include <ctype.h>
 
 // Cria e inicializa um novo participante
 Participante* criarParticipante(char nome[], char matricula[], char email[]) {
@@ -12,6 +13,10 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
         printf("Erro ao alocar memória para participante.\n");
         exit(1);
     }
+    toLowerCase(nome);
+    toLowerCase(matricula);
+    toLowerCase(email);
+
     strcpy(novo->nome, nome);
     strcpy(novo->matricula, matricula);
     strcpy(novo->email, email);
@@ -35,6 +40,7 @@ int verificarParticipanteExistente(Participante *lista, char matricula[]) {
 }
 
 void inserirParticipante(Participante **lista, Participante *novo) {
+    toLowerCase(novo->matricula);
     if (verificarParticipanteExistente(*lista, novo->matricula)) {
         printf("Erro: Participante com matrícula '%s' já existe.\n", novo->matricula);
         free(novo);  // Libera a memória do novo participante
@@ -127,6 +133,7 @@ Participante* insertionSortParticipantes(Participante *head) {
             sorted = atual;
         } else {
             // Insere entre 'prev' e 'p'
+            // A diferença de prev e p é que prev é o último nó antes de onde atual deve ser inserido e p é o próximo nó
             atual->prox = prev->prox;
             atual->ant = prev;
             if (prev->prox)
@@ -174,7 +181,7 @@ void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaPar
         printf("Lista de participantes vazia.\n");
         return;
     }
-
+    toLowerCase(matricula);  
     Participante *atual = *lista;
 
     while (atual != NULL) {

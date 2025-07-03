@@ -2,6 +2,7 @@
 #define EVENTO_H
 
 #include "atividade.h" // Um evento possui uma lista de atividades
+#include "utils.h"
 
 typedef struct Evento {
     char nome[100];
