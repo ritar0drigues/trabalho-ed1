@@ -107,7 +107,7 @@ void credenciar_participantes(Fila *f) {
 
     printf("Credenciando participantes (FIFO):\n");
     int count = 0;
-    while (!fila_vazia(f) && count < 3) { // Credencia até 3 participantes para demonstração
+    while (!fila_vazia(f) && count < 1) { 
         Participante *p = fila_retira(f);
         if (p != NULL) {
             printf("  - %s (Matrícula: %s) credenciado com sucesso!\n", p->nome, p->matricula);
