@@ -23,6 +23,7 @@ void listarParticipantesOrdenado(Participante **lista);
 void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaParticipantes);
 void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **listaParticipantes);
 void liberarParticipantes(Participante **lista);
-
+// Converte string para minúsculas
+void toLowerCase(char *str);
 #endif
 

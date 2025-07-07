@@ -23,5 +23,7 @@ void removerAtividade(Atividade **lista, char titulo[], Pilha *pilhaAtividades);
 void desfazerRemocaoAtividade(Pilha *pilhaAtividades, Atividade **listaAtividades);
 Atividade* buscarAtividade(Atividade *lista, char titulo[]);
 void liberarAtividades(Atividade **lista);
+// Converte string para minúsculas
+void toLowerCase(char *str);
 
 #endif

@@ -95,3 +95,28 @@ void fila_libera(Fila *f) {
     }
     free(f);
 }
+
+void credenciar_participantes(Fila *f) {
+    printf("\n============================================\n");
+    printf("      CREDENCIAMENTO DE PARTICIPANTES       \n");
+    printf("============================================\n");
+    if (fila_vazia(f)) {
+        printf("A fila de credenciamento está vazia. Nenhum participante para credenciar.\n");
+        return;
+    }
+
+    printf("Credenciando participantes (FIFO):\n");
+    int count = 0;
+    while (!fila_vazia(f) && count < 1) { 
+        Participante *p = fila_retira(f);
+        if (p != NULL) {
+            printf("  - %s (Matrícula: %s) credenciado com sucesso!\n", p->nome, p->matricula);
+            count++;
+        }
+    }
+    if (!fila_vazia(f)) {
+        printf("\nRestam participantes na fila de credenciamento. Use a opção 12 para ver a fila atualizada.\n");
+    } else {
+        printf("\nTodos os participantes da fila de credenciamento foram credenciados.\n");
+    }
+}

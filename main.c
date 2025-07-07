@@ -7,6 +7,8 @@
 #include "pilha.h"
 #include "fila.h"
 
+void credenciar_participantes(Fila *f);
+
 void limparTela() {
     #ifdef _WIN32
         system("cls");
@@ -36,6 +38,7 @@ void menu() {
     printf("[10] Desfazer remoção de atividade\n");
     printf("[11] Desfazer remoção de participante\n");
     printf("[12] Listar ordem de chegada dos participantes\n");
+    printf("[13] Credenciar participantes (FIFO)\n");
     printf("[0]  Sair\n");
     printf("============================================\n");
     printf("Digite sua opção: ");
@@ -426,6 +429,12 @@ int main() {
                 printf("      LISTAGEM DE ORDEM DE CHEGADA          \n");
                 printf("============================================\n");
                 fila_imprimir(filaChegada);
+                pausar();
+                break;
+            }
+
+            case 13: {
+                credenciar_participantes(filaChegada);
                 pausar();
                 break;
             }

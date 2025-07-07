@@ -243,4 +243,3 @@ void liberarParticipantes(Participante **lista) {
     }
     *lista = NULL;
 }
-
