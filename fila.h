@@ -20,5 +20,6 @@ void fila_inserir(Fila *f, Participante *p);
 void fila_imprimir(Fila *f);
 Participante *fila_retira(Fila *f);
 void fila_libera(Fila *f);
+int fila_contem_participante(Fila *f, char matricula[]);
 
 #endif

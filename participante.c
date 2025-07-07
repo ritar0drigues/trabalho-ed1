@@ -1,16 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>  // Para tolower
 #include "participante.h"
 #include "pilha.h"
-
-// Converte string para minúsculas
-void toLowerCase(char *str) {
-    for (int i = 0; str[i]; i++) {
-        str[i] = tolower((unsigned char)str[i]);
-    }
-}
+#include "utils.h"
+#include <ctype.h>
 
 // Cria e inicializa um novo participante
 Participante* criarParticipante(char nome[], char matricula[], char email[]) {
@@ -19,7 +13,6 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
         printf("Erro ao alocar memória para participante.\n");
         exit(1);
     }
-
     toLowerCase(nome);
     toLowerCase(matricula);
     toLowerCase(email);
@@ -29,30 +22,32 @@ Participante* criarParticipante(char nome[], char matricula[], char email[]) {
     strcpy(novo->email, email);
     novo->ant = NULL;
     novo->prox = NULL;
-    novo->registrado = 0;
+    novo->registrado = 0;  // Ainda não enfileirado
     return novo;
 }
 
-// Verifica se já existe participante com a mesma matrícula
-int participanteExiste(Participante *lista, char matricula[]) {
-    toLowerCase(matricula);
-    while (lista != NULL) {
-        if (strcmp(lista->matricula, matricula) == 0)
-            return 1;
-        lista = lista->prox;
+// Insere no fim da lista
+
+int verificarParticipanteExistente(Participante *lista, char matricula[]) {
+    Participante *atual = lista;
+    while (atual != NULL) {
+        if (strcmp(atual->matricula, matricula) == 0) {
+            return 1; // Participante já existe
+        }
+        atual = atual->prox;
     }
-    return 0;
+    return 0; 
 }
 
-// Insere no fim da lista (se matrícula ainda não existir)
 void inserirParticipante(Participante **lista, Participante *novo) {
-    if (participanteExiste(*lista, novo->matricula)) {
-        printf("Já existe um participante com essa matrícula.\n");
-        free(novo);
+    toLowerCase(novo->matricula);
+    if (verificarParticipanteExistente(*lista, novo->matricula)) {
+        printf("Erro: Participante com matrícula '%s' já existe.\n", novo->matricula);
+        free(novo);  // Libera a memória do novo participante
         return;
     }
 
-    novo->prox = NULL;
+    novo->prox = NULL;  // Evita loops com ponteiros antigos
     novo->ant = NULL;
 
     if (*lista == NULL) {
@@ -83,7 +78,7 @@ void listarParticipantes(Participante **lista) {
     }
 }
 
-// Copia a lista de participantes
+// Função para copiar a lista de participantes (cria nova lista com mesmo conteúdo)
 Participante* copiarListaParticipantes(Participante *origem) {
     Participante *copia = NULL, *fim = NULL;
 
@@ -111,7 +106,7 @@ Participante* copiarListaParticipantes(Participante *origem) {
     return copia;
 }
 
-// Ordena por nome com Insertion Sort
+// Função de Insertion Sort para ordenar a lista duplamente encadeada por nome
 Participante* insertionSortParticipantes(Participante *head) {
     Participante *sorted = NULL;
 
@@ -119,22 +114,26 @@ Participante* insertionSortParticipantes(Participante *head) {
         Participante *atual = head;
         head = head->prox;
 
+        // Desconecta o nó para inserção
         atual->ant = atual->prox = NULL;
 
         Participante *p = sorted;
         Participante *prev = NULL;
-
+        // Procura a posição de inserção na lista 'sorted'
         while (p != NULL && strcmp(p->nome, atual->nome) < 0) {
             prev = p;
             p = p->prox;
         }
 
         if (prev == NULL) {
+            // Insere no início da lista ordenada
             atual->prox = sorted;
             if (sorted)
                 sorted->ant = atual;
             sorted = atual;
         } else {
+            // Insere entre 'prev' e 'p'
+            // A diferença de prev e p é que prev é o último nó antes de onde atual deve ser inserido e p é o próximo nó
             atual->prox = prev->prox;
             atual->ant = prev;
             if (prev->prox)
@@ -146,21 +145,24 @@ Participante* insertionSortParticipantes(Participante *head) {
     return sorted;
 }
 
-// Lista participantes ordenados
+// Função para listar os participantes ordenados por nome (usa cópia para manter a lista original)
 void listarParticipantesOrdenado(Participante **lista) {
     if (*lista == NULL) {
         printf("Nenhum participante cadastrado.\n");
         return;
     }
 
+    // Copia a lista original
     Participante *copia = copiarListaParticipantes(*lista);
     if (copia == NULL) {
         printf("Erro ao copiar a lista.\n");
         return;
     }
 
+    // Ordena a cópia usando insertion sort
     copia = insertionSortParticipantes(copia);
 
+    // Exibe a lista ordenada
     Participante *atual = copia;
     while (atual != NULL) {
         printf("\nNome: %s\n", atual->nome);
@@ -169,36 +171,39 @@ void listarParticipantesOrdenado(Participante **lista) {
         atual = atual->prox;
     }
 
+    // Libera a memória da cópia para evitar vazamentos
     liberarParticipantes(&copia);
 }
 
-// Remove participante da lista e empilha
+// Remove participante da lista e empilha o participante removido
 void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaParticipantes) {
     if (*lista == NULL) {
         printf("Lista de participantes vazia.\n");
         return;
     }
-
-    toLowerCase(matricula);
-
+    toLowerCase(matricula);  
     Participante *atual = *lista;
 
     while (atual != NULL) {
         if (strcmp(atual->matricula, matricula) == 0) {
+            // Remove da lista duplamente encadeada
             if (atual->ant == NULL) {
+                // Primeiro da lista
                 *lista = atual->prox;
-                if (*lista != NULL)
+                if (*lista != NULL) {
                     (*lista)->ant = NULL;
+                }
             } else {
                 atual->ant->prox = atual->prox;
-                if (atual->prox != NULL)
+                if (atual->prox != NULL) {
                     atual->prox->ant = atual->ant;
+                }
             }
 
+            // Empilha o ponteiro do participante removido para possível restauração
             atual->prox = NULL;
             atual->ant = NULL;
             pilha_inserir(pilhaParticipantes, (void *)atual);
-            printf("Participante removido e salvo para desfazer.\n");
             return;
         }
         atual = atual->prox;
@@ -207,7 +212,8 @@ void removerParticipante(Participante **lista, char matricula[], Pilha *pilhaPar
     printf("Participante não encontrado.\n");
 }
 
-// Desfaz a última remoção
+
+// Desfaz a última remoção de participante (restaura na lista)
 void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **listaParticipantes) {
     if (pilha_vazia(pilhaParticipantes)) {
         printf("Nenhuma remoção de participante para desfazer.\n");
@@ -215,16 +221,19 @@ void desfazerRemocaoParticipante(Pilha *pilhaParticipantes, Participante **lista
     }
 
     Participante *participante = (Participante *) pilha_pop(pilhaParticipantes);
+
     if (participante == NULL) {
         printf("Erro ao recuperar participante da pilha.\n");
         return;
     }
 
+    // Reinsere participante na lista
     inserirParticipante(listaParticipantes, participante);
     printf("Desfazer: participante '%s' restaurado com sucesso.\n", participante->nome);
 }
 
-// Libera memória dos participantes
+
+// Libera a memória de todos os participantes da lista
 void liberarParticipantes(Participante **lista) {
     Participante *atual = *lista;
     while (atual != NULL) {

@@ -2,7 +2,9 @@
 #define PARTICIPANTE_H
 #include "participante.h"
 #include "pilha.h"
+#include "utils.h"
 
+// Funções para manipular a lista duplamente encadeada
 typedef struct Participante{
     char nome[100];
     char matricula[20];
@@ -12,7 +14,6 @@ typedef struct Participante{
     struct Participante *prox;
 } Participante;
 
-// Funções para manipular a lista duplamente encadeada
 Participante* criarParticipante(char nome[], char matricula[], char email[]);
 void inserirParticipante(Participante **lista, Participante *novo);
 void listarParticipantes(Participante **lista);

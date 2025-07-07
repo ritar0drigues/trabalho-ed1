@@ -1,16 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>  // Para tolower()
 #include "evento.h"
 #include "atividade.h"
-
-// Converte string para minúsculas
-void toLowerCase(char *str) {
-    for (int i = 0; str[i]; i++) {
-        str[i] = tolower((unsigned char)str[i]);
-    }
-}
+#include "utils.h"
+#include <ctype.h>
 
 // Cria um evento com nome e data
 Evento* criarEvento(char nome[], char data[]) {
@@ -27,23 +21,27 @@ Evento* criarEvento(char nome[], char data[]) {
     return novo;
 }
 
-// Verifica se já existe evento com o mesmo nome
-int eventoExiste(Evento *lista, char nome[]) {
+// Verifica se já existe um evento com mesmo nome
+int verificarEventoExistente(Evento *lista, char nome[], char data[]) {
     if (lista == NULL) return 0;
+
     Evento *atual = lista;
     do {
         if (strcmp(atual->nome, nome) == 0)
             return 1;
         atual = atual->prox;
     } while (atual != lista);
+
     return 0;
 }
 
 // Insere um evento na lista circular
 void inserirEvento(Evento **lista, Evento *novo) {
-    if (eventoExiste(*lista, novo->nome)) {
-        printf("Já existe um evento com esse nome.\n");
-        free(novo); // evita vazamento de memória
+    toLowerCase(novo->nome);
+    if (verificarEventoExistente(*lista, novo->nome, novo->data)) {
+        printf("Erro: Já existe um evento com o nome '%s'!\n", novo->nome);
+        printf("Obs: O nome do evento deve ser único.\n");
+        free(novo);
         return;
     }
 
@@ -57,34 +55,41 @@ void inserirEvento(Evento **lista, Evento *novo) {
         atual->prox = novo;
         novo->prox = *lista;
     }
-    printf("Evento inserido com sucesso.\n");
+    printf("\n✅ Evento '%s' cadastrado com sucesso!\n", novo->nome);
 }
 
 // Lista todos os eventos
 void listarEventos(Evento *lista) {
     if (lista == NULL) {
-        printf("Nenhum evento cadastrado.\n");
+        printf("\n----------------------------------------\n");
+        printf("📝 Nenhum evento cadastrado.\n");
+        printf("----------------------------------------\n");
         return;
     }
 
     Evento *atual = lista;
-    printf("--EVENTOS:");
+    printf("\n============================================\n");
+    printf("              LISTA DE EVENTOS              \n");
+    printf("============================================\n");
     do {
-        printf("\nEvento: %s\n", atual->nome);
-        printf("Data: %s\n", atual->data);
-        listarAtividadesSemOrdenar(atual->atividades);
+        printf("\n📅 Evento: %s\n", atual->nome);
+        printf("📆 Data: %s\n", atual->data);
+        printf("----------------------------------------\n");
+        if (atual->atividades != NULL) {
+            printf("Atividades do evento:\n");
+            listarAtividadesSemOrdenar(atual->atividades);
+        }
         atual = atual->prox;
     } while (atual != lista);
 }
 
 // Remove um evento pelo nome
 void removerEvento(Evento **lista, char nome[]) {
+    toLowerCase(nome);
     if (*lista == NULL) {
         printf("Nenhum evento para remover.\n");
         return;
     }
-
-    toLowerCase(nome);
 
     Evento *atual = *lista;
     Evento *anterior = NULL;
@@ -92,11 +97,13 @@ void removerEvento(Evento **lista, char nome[]) {
     do {
         if (strcmp(atual->nome, nome) == 0) {
             if (atual == atual->prox) {
+                // Único evento na lista
                 liberarAtividades(&atual->atividades);
                 free(atual);
                 *lista = NULL;
             } else {
                 if (atual == *lista) {
+                    // Removendo o primeiro
                     Evento *ultimo = *lista;
                     while (ultimo->prox != *lista) {
                         ultimo = ultimo->prox;
@@ -109,21 +116,20 @@ void removerEvento(Evento **lista, char nome[]) {
                 liberarAtividades(&atual->atividades);
                 free(atual);
             }
-            printf("Evento removido com sucesso.\n");
+            printf("\n✅ Evento removido com sucesso!\n");
             return;
         }
         anterior = atual;
         atual = atual->prox;
     } while (atual != *lista);
 
-    printf("Evento não encontrado.\n");
+    printf("\n❌ Evento não encontrado.\n");
 }
 
 // Busca um evento pelo nome
 Evento* buscarEvento(Evento *lista, char nome[]) {
-    if (lista == NULL) return NULL;
-
     toLowerCase(nome);
+    if (lista == NULL) return NULL;
 
     Evento *atual = lista;
     do {

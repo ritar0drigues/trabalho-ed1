@@ -3,6 +3,7 @@
 
 #include "participante.h"
 #include "pilha.h"
+#include "utils.h"
 
 typedef struct Atividade {
     char titulo[100];

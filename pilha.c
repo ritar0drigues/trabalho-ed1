@@ -52,3 +52,19 @@ void pilha_libera(Pilha *p) {
     }
     free(p);
 }
+
+
+void visualizarPilha(Pilha *p) {
+    if (pilha_vazia(p)) {
+        printf("Pilha vazia.\n");
+        return;
+    }
+    no *atual = p->topo;
+    printf("Pilha:\n");
+    printf("+-------------------+\n");
+    while (atual != NULL) {
+        printf("| %p |\n", atual->dado); // Imprime o endereço do dado
+        printf("+-------------------+\n");
+        atual = atual->prox;
+    }
+}
